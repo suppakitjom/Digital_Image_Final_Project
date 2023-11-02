@@ -47,8 +47,8 @@ model = Sequential([
 model.compile(optimizer=Adam(), loss='binary_crossentropy', metrics=['accuracy'])
 
 # Train the model
-# model.fit(images, labels, epochs=200, batch_size=32, validation_split=0.2)
-model.fit(images, labels, epochs=200, batch_size=32, validation_split=0.2)
+model.fit(images, labels, epochs=20, batch_size=32, validation_split=0.2)
+# model.fit(images, labels, epochs=50, batch_size=32, validation_split=0.2)
 
 # Model summary
 model.summary()

@@ -48,7 +48,7 @@ while True:
 
             # Predict if the person is smiling
             prediction = model.predict(processed_face)
-            if prediction[0][0] < 0.395:  # Adjust threshold as per your model's performance
+            if prediction[0][0] < 0.3:  # Adjust threshold as per your model's performance
                 label = "Smiling"
                 frame_color = (0, 255, 0)  # Green frame for smiling
             else:
