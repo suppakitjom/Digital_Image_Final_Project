@@ -1,15 +1,26 @@
+
 import pandas as pd
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
-from keras.optimizers import Adam
+from keras.optimizers.legacy import Adam
+import json
 
-# Load and process the data using Pandas
 def load_data(file_path):
-    df = pd.read_csv(file_path, header=None, converters={0: lambda x: np.fromstring(x.strip('[]'), sep=', ')})
-    images = np.stack(df[0].values)
-    labels = df[1].values
-    return images, labels
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    images = []
+    labels = []
+
+    for line in lines:
+        image_data_str, label = line.rstrip().rsplit(',', 1)
+        # Convert the string representation directly to a list
+        image_data = json.loads(image_data_str)
+        images.append(np.array(image_data, dtype=np.uint8).reshape(128, 128))
+        labels.append(int(label))
+
+    return np.array(images), np.array(labels)
 
 # Load data
 images, labels = load_data('output_data.txt')
@@ -37,9 +48,10 @@ model.compile(optimizer=Adam(), loss='binary_crossentropy', metrics=['accuracy']
 
 # Train the model
 model.fit(images, labels, epochs=10, batch_size=32, validation_split=0.2)
+# model.fit(images, labels, epochs=50, batch_size=32, validation_split=0.2)
 
 # Model summary
 model.summary()
 
 # Save the model
-model.save('my_cnn_model.h5')
+model.save('my_cnn_model.keras')
