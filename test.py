@@ -7,7 +7,7 @@ from PIL import Image
 # Load the trained model
 model = load_model('model.keras')  # Replace with your model path
 
-# Define the process_image function you provided
+# Define the process_image function
 def process_image(face_image):
     IMG_SIZE = (128, 128)
     face_image = cv2.resize(face_image, IMG_SIZE)
@@ -26,10 +26,9 @@ def process_image(face_image):
     for feature in face_landmarks:
         for point in face_landmarks[feature]:
             x, y = point
-            # Ensure x and y are within the bounds of the image size
             x = min(max(0, x), IMG_SIZE[0] - 1)
             y = min(max(0, y), IMG_SIZE[1] - 1)
-            blank_image[y, x] = 255  # white color for the landmark points
+            blank_image[y, x] = 255
 
     # Get the nose bridge points to calculate the rotation angle
     top_nose_bridge = face_landmarks['nose_bridge'][0]
@@ -51,6 +50,10 @@ def process_image(face_image):
 video_capture = cv2.VideoCapture(0)
 
 while True:
+    # Initialize the smile counter for each frame
+    smile_count = 0
+    people_count = 0
+
     # Capture frame-by-frame
     ret, frame = video_capture.read()
     
@@ -60,33 +63,33 @@ while True:
     # Resize frame to 1/4 size for faster face detection processing
     small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
-    # Convert the image from BGR color (which OpenCV uses) to RGB color
+    # Convert the image from BGR color to RGB color
     rgb_small_frame = small_frame[:, :, ::-1]
 
     # Find all the faces in the current frame of video
     face_locations = face_recognition.face_locations(rgb_small_frame)
-
-    # Now we need to scale back up face locations since the frame we detected in was scaled to 1/4 size
     face_locations = [(top*4, right*4, bottom*4, left*4) for top, right, bottom, left in face_locations]
 
     for face_location in face_locations:
+        # Increment the people counter
+        people_count += 1
+
         # Extract the face image
         top, right, bottom, left = face_location
-        face_image = frame[top:bottom, left:right]  # Note: Using the original frame, not the scaled one
+        face_image = frame[top:bottom, left:right]
 
         # Process the face image
         try:
             processed_face = process_image(face_image)
-            processed_face = np.expand_dims(processed_face, axis=0)  # Add batch dimension
-            processed_face = processed_face / 255.0  # Normalize the image
+            processed_face = np.expand_dims(processed_face, axis=0)
+            processed_face = processed_face / 255.0
 
             # Use the model to predict if the person is smiling
             prediction = model.predict(processed_face)
-            print(prediction)
             smile_prob = prediction[0][1]
             
-            # Display the result on the frame
-            if smile_prob > 1e-4:  # You can adjust this threshold
+            if smile_prob > 1e-4:  # Adjust the threshold as needed
+                smile_count += 1
                 cv2.putText(frame, 'Smiling :)', (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,255,0), 2)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
             else:
@@ -94,6 +97,10 @@ while True:
                 cv2.rectangle(frame, (left, top), (right, bottom), (255, 0, 0), 2)
         except Exception as e:
             print(f"Error in processing the image: {e}")
+
+    # Display the smiling count on the frame
+    smile_text = f"Smiling: {smile_count}/{people_count}"
+    cv2.putText(frame, smile_text, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
 
     # Display the resulting frame
     cv2.imshow('Video', frame)
