@@ -3,11 +3,42 @@ import numpy as np
 import face_recognition
 from tensorflow.keras.models import load_model
 from PIL import Image
+import argparse
+# import keyboard
+from time import time,sleep
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--debug', action='store_true')
+args = parser.parse_args()
+DEBUG = args.debug
 
 # Load the trained model
-model = load_model('model.keras')  # Replace with your model path
+model = load_model('model2.keras') 
 
-# Define the process_image function
+def take_photo(video_capture):
+    start_time = time()
+    while True:
+        ret, frame = video_capture.read()
+        if not ret:
+            break  # Break the loop if unable to capture a frame
+
+        elapsed_time = time() - start_time
+        remaining_time = 5 - int(elapsed_time)
+        cv2.putText(frame, str(max(remaining_time, 0)), (150, 150), cv2.FONT_HERSHEY_SIMPLEX, 7, (0, 0, 255), 10, cv2.LINE_AA)
+        
+        cv2.imshow('Video', frame)
+        
+        if elapsed_time >= 5:
+            ret, frame = video_capture.read()
+            cv2.imwrite('captured_image.jpg', frame)
+            print("Image captured and saved as 'captured_image.jpg'")
+            break  # Break the loop after the photo is taken
+
+        # Break the loop if 'q' is pressed
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+
 def process_image(face_image):
     IMG_SIZE = (128, 128)
     face_image = cv2.resize(face_image, IMG_SIZE)
@@ -46,7 +77,6 @@ def process_image(face_image):
 
     return rotated_image_array
 
-# Open a connection to the webcam
 video_capture = cv2.VideoCapture(0)
 
 while True:
@@ -54,7 +84,6 @@ while True:
     smile_count = 0
     people_count = 0
 
-    # Capture frame-by-frame
     ret, frame = video_capture.read()
     
     if not ret:
@@ -71,7 +100,6 @@ while True:
     face_locations = [(top*4, right*4, bottom*4, left*4) for top, right, bottom, left in face_locations]
 
     for face_location in face_locations:
-        # Increment the people counter
         people_count += 1
 
         # Extract the face image
@@ -87,8 +115,10 @@ while True:
             # Use the model to predict if the person is smiling
             prediction = model.predict(processed_face)
             smile_prob = prediction[0][1]
+            if DEBUG:
+                print(prediction[0][1])
             
-            if smile_prob > 1e-4:  # Adjust the threshold as needed
+            if smile_prob > 1e-1:  # Adjust the threshold as needed
                 smile_count += 1
                 cv2.putText(frame, 'Smiling :)', (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,255,0), 2)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
@@ -100,6 +130,10 @@ while True:
 
     # Display the smiling count on the frame
     smile_text = f"Smiling: {smile_count}/{people_count}"
+
+    if smile_count == people_count and (smile_count != 0):
+        take_photo(video_capture)
+
     cv2.putText(frame, smile_text, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
 
     # Display the resulting frame
@@ -108,7 +142,9 @@ while True:
     # Break the loop when 'q' is pressed
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+    elif cv2.waitKey(1) & 0xFF == ord('s'):
+        print('taking photo')
+        take_photo(video_capture)
 
-# When everything is done, release the capture
 video_capture.release()
 cv2.destroyAllWindows()

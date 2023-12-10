@@ -55,9 +55,9 @@ model = Sequential([
 model.compile(optimizer=Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Train the model
-history = model.fit(X_train, y_train, epochs=20, validation_data=(X_test, y_test))
+history = model.fit(X_train, y_train, epochs=100, validation_data=(X_test, y_test),batch_size=64)
 
 # Evaluate the model
 test_loss, test_acc = model.evaluate(X_test, y_test)
-model.save('model.keras')
+model.save('model2.keras')
 print(f"Test accuracy: {test_acc:.4f}")

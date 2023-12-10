@@ -5,7 +5,9 @@ import numpy as np
 import os
 import cv2
 import time
+from skimage.feature import hog
 
+PATH = 'lfw all images'
 def process_image(face_image):
     # Resize image to 128x128 if it's not already
     IMG_SIZE = (128, 128)
@@ -47,7 +49,7 @@ def process_image(face_image):
     resized_rotated_img = rotated_img.resize(IMG_SIZE)
     rotated_image_array = np.array(resized_rotated_img)
     rotated_image_array = rotated_image_array.reshape((IMG_SIZE[0], IMG_SIZE[1], 1))
-
+    
     return rotated_image_array
 
 
@@ -91,4 +93,4 @@ def generate_data(directory, img_size=(128, 128)):
     end_time = time.time()
     print(f"Data generation completed in {end_time - start_time:.2f} seconds.")
     print(f"Total number of data points: {data_count}")
-generate_data('lfw all images')
+generate_data(PATH)
