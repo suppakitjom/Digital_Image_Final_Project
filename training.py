@@ -37,13 +37,13 @@ images = np.expand_dims(images, axis=-1)
 labels = to_categorical(labels)
 
 # Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.1, random_state=42)
 
 # Define a simple CNN model
 model = Sequential([
-    Conv2D(32, (3, 3), activation='relu', input_shape=(128, 128, 1)),
+    Conv2D(32, (5, 5), activation='relu', input_shape=(128, 128, 1)),
     MaxPooling2D((2, 2)),
-    Conv2D(64, (3, 3), activation='relu'),
+    Conv2D(64, (5, 5), activation='relu'),
     MaxPooling2D((2, 2)),
     Flatten(),
     Dense(64, activation='relu'),
@@ -59,5 +59,5 @@ history = model.fit(X_train, y_train, epochs=100, validation_data=(X_test, y_tes
 
 # Evaluate the model
 test_loss, test_acc = model.evaluate(X_test, y_test)
-model.save('model2.keras')
+model.save('modellll.keras')
 print(f"Test accuracy: {test_acc:.4f}")

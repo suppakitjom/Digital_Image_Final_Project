@@ -4,7 +4,6 @@ import face_recognition
 from tensorflow.keras.models import load_model
 from PIL import Image
 import argparse
-# import keyboard
 from time import time,sleep
 
 parser = argparse.ArgumentParser()
@@ -35,7 +34,7 @@ def take_photo(video_capture):
             break  # Break the loop after the photo is taken
 
         # Break the loop if 'q' is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('w'):
             break
 
 
@@ -116,9 +115,9 @@ while True:
             prediction = model.predict(processed_face)
             smile_prob = prediction[0][1]
             if DEBUG:
-                print(prediction[0][1])
+                print(prediction[0])
             
-            if smile_prob > 1e-1:  # Adjust the threshold as needed
+            if np.argmax(prediction) == 1:
                 smile_count += 1
                 cv2.putText(frame, 'Smiling :)', (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,255,0), 2)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
