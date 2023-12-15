@@ -1,0 +1,7 @@
+training data: https://github.com/suppakitjom/Digital_Image_Final_Project/tree/8c613f4501f3eb393b36209a1aea2afae25629e1/lfw%20all%20images
+
+
+testing data (smiling): https://github.com/suppakitjom/Digital_Image_Final_Project/tree/8c613f4501f3eb393b36209a1aea2afae25629e1/1
+testing data (not smiling): https://github.com/suppakitjom/Digital_Image_Final_Project/tree/8c613f4501f3eb393b36209a1aea2afae25629e1/0
+
+model: https://github.com/suppakitjom/Digital_Image_Final_Project/blob/8c613f4501f3eb393b36209a1aea2afae25629e1/model2.keras

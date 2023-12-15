@@ -55,11 +55,11 @@ true_negative = 0
 false_negative = 0
 
 # load each picture in folder named 0
-for filename in os.listdir('./0'):
+for filename in os.listdir('./testing image/0'):
     # variable to check if all faces in the image are not smiling
     all_faces_not_smiling = True
     # load image
-    image = face_recognition.load_image_file('./0/' + filename)
+    image = face_recognition.load_image_file('./testing image/0/' + filename)
     # get face locations
     face_locations = face_recognition.face_locations(image)
     # for each face image, call the process_image function
@@ -82,10 +82,10 @@ for filename in os.listdir('./0'):
         false_positive += 1
 
 # load each picture in folder named 1
-for filename in os.listdir('./1'):
+for filename in os.listdir('./testing image/1'):
     all_faces_smiling = True
     # load image
-    image = face_recognition.load_image_file('./1/' + filename)
+    image = face_recognition.load_image_file('./testing image/1/' + filename)
     # get face locations
     face_locations = face_recognition.face_locations(image)
     # for each face image, call the process_image function

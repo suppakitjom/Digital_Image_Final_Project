@@ -7,7 +7,7 @@ import cv2
 import time
 from skimage.feature import hog
 
-PATH = 'lfw all images'
+PATH = 'training image'
 def process_image(face_image):
     # Resize image to 128x128 if it's not already
     IMG_SIZE = (128, 128)
